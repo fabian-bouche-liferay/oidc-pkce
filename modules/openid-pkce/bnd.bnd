@@ -1,0 +1,3 @@
+Bundle-Name: openid-pkce
+Bundle-SymbolicName: com.liferay.samples.fbo.openid.pkce
+Bundle-Version: 1.0.0
