@@ -1,7 +1,7 @@
 # OIDC PKCE POC
 
 Vanilla Liferay does not support PKCE in the OIDC SSO.
-This custom code replaces `com.liferay.samples.fbo.openid.pkce.OpenIdConnectAuthenticationHandlerImpl.java`
+This custom code replaces `com.liferay.portal.security.sso.openid.connect.internal.OpenIdConnectAuthenticationHandlerImpl.java`
 so as to take advantage of the fact that the nimbus sdk supports PKCE already.
 
 Go to System Settings -> Module Container and blacklist the following component:
