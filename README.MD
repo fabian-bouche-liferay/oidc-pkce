@@ -5,7 +5,7 @@ This custom code replaces `com.liferay.samples.fbo.openid.pkce.OpenIdConnectAuth
 so as to take advantage of the fact that the nimbus sdk supports PKCE already.
 
 Go to System Settings -> Module Container and blacklist the following component:
-`com.liferay.samples.fbo.openid.pkce.OpenIdConnectAuthenticationHandlerImpl.java`
+`com.liferay.portal.security.sso.openid.connect.internal.OpenIdConnectAuthenticationHandlerImpl`
 
 This code is built again DXP 7.4 U47. There has been a lot of changes and the same code would have to
 be adapted against other updates.
