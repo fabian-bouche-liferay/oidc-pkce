@@ -39,10 +39,10 @@ import com.liferay.portal.security.sso.openid.connect.internal.OpenIdConnectSess
 import com.liferay.portal.security.sso.openid.connect.internal.configuration.admin.service.OpenIdConnectProviderManagedServiceFactory;
 import com.liferay.portal.security.sso.openid.connect.internal.session.manager.OfflineOpenIdConnectSessionManager;
 import com.liferay.portal.security.sso.openid.connect.internal.util.OpenIdConnectRequestParametersUtil;
-import com.liferay.portal.security.sso.openid.connect.internal.util.OpenIdConnectTokenRequestUtil;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.proc.BadJOSEException;
+import com.nimbusds.jose.proc.JWKSecurityContext;
 import com.nimbusds.jose.util.DefaultResourceRetriever;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.langtag.LangTag;
@@ -54,7 +54,10 @@ import com.nimbusds.oauth2.sdk.ParseException;
 import com.nimbusds.oauth2.sdk.TokenErrorResponse;
 import com.nimbusds.oauth2.sdk.TokenRequest;
 import com.nimbusds.oauth2.sdk.TokenResponse;
+import com.nimbusds.oauth2.sdk.auth.ClientAuthentication;
+import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod;
 import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
+import com.nimbusds.oauth2.sdk.auth.ClientSecretJWT;
 import com.nimbusds.oauth2.sdk.auth.Secret;
 import com.nimbusds.oauth2.sdk.http.HTTPRequest;
 import com.nimbusds.oauth2.sdk.http.HTTPResponse;
@@ -113,9 +116,12 @@ import net.minidev.json.JSONObject;
  */
 @Component(
 		immediate = true,
+	    property = {
+	            "service.ranking:Integer=100"
+	        },
 		service = OpenIdConnectAuthenticationHandler.class
 		)
-public class PKCEOpenIdConnectAuthenticationHandlerImpl
+public class PKCEAndJWTOpenIdConnectAuthenticationHandlerImpl
 	implements OpenIdConnectAuthenticationHandler {
 
 	private static final String OIDC_CODE_VERIFIER = "OIDC_CODE_VERIFIER";
@@ -156,8 +162,16 @@ public class PKCEOpenIdConnectAuthenticationHandlerImpl
 				key, Arrays.asList(values)),
 			tokenRequestParametersJSONObject);
 
+		ClientAuthentication clientAuth;
+		
+		if(ClientAuthenticationMethod.CLIENT_SECRET_JWT.equals(oidcClientInformation.getMetadata().getTokenEndpointAuthMethod())) {
+			clientAuth = new ClientSecretJWT(clientID, uri, JWSAlgorithm.HS256, secret);
+		} else {
+			clientAuth = new ClientSecretBasic(clientID, secret);
+		}
+		
 		TokenRequest tokenRequest = new TokenRequest(
-			uri, new ClientSecretBasic(clientID, secret),
+			uri, clientAuth,
 			authorizationCodeGrant, null,
 			Arrays.asList(
 				OpenIdConnectRequestParametersUtil.getResourceURIs(
@@ -634,7 +648,7 @@ public class PKCEOpenIdConnectAuthenticationHandlerImpl
 			"#OPEN_ID_CONNECT_AUTHENTICATION_SESSION";
 
 	private static final Log _log = LogFactoryUtil.getLog(
-			PKCEOpenIdConnectAuthenticationHandlerImpl.class);
+			PKCEAndJWTOpenIdConnectAuthenticationHandlerImpl.class);
 
 	@Reference
 	private AuthorizationServerMetadataResolver
