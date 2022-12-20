@@ -18,3 +18,8 @@ The following error will appear in the logs:
 I'll have a look and try to fix that.
 But it should not prevent this from working if we are not in a scenario where session needs to be replicated.
  
+## client_secret_jwt support
+
+Added support for client_secret_jwt
+Use the new ***OAuth Client Administration menu*** in the Control Menu in order to
+set "token_endpoint_auth_method": "client_secret_jwt"
