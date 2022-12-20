@@ -22,4 +22,4 @@ But it should not prevent this from working if we are not in a scenario where se
 
 Added support for client_secret_jwt
 Use the new ***OAuth Client Administration menu*** in the Control Menu in order to
-set "token_endpoint_auth_method": "client_secret_jwt"
+set `"token_endpoint_auth_method": "client_secret_jwt"`
